@@ -21,7 +21,7 @@ var callback = function(details) {
             mypost=mypost.replace(/\+/g, "");
             mypost=mypost.replace(/\\/g, "");
             console.log(mypost)
-            if( mypost.match(/<script.*>/gi) || param.match(/%3cscript.*>/gi) ) return {cancel: true};
+            if( mypost.match(/<script.*>/gi) || mypost.match(/%3cscript.*>/gi) ) return {cancel: true};
 
       }   
         
