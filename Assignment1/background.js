@@ -11,7 +11,7 @@ var callback = function(details) {
             param=param.replace(/\s/g, "");
             param=param.replace(/\+/g, "");
             
-            if( param.match(/<script.*>/gi) || param.match(/%3cscript.*>/gi) ) return {cancel: true};   
+            if( param.match(/<script/gi) ||  param.match(/%3cscript/gi) || param.match(/javascript:/gi) || param.match(/on.*=/gi) ) return {cancel: true};   
 
       }  else if(details.method == "POST") {
     
@@ -21,7 +21,7 @@ var callback = function(details) {
             mypost=mypost.replace(/\+/g, "");
             mypost=mypost.replace(/\\/g, "");
             console.log(mypost)
-            if( mypost.match(/<script.*>/gi) || mypost.match(/%3cscript.*>/gi) ) return {cancel: true};
+            if( mypost.match(/<script/gi) || mypost.match(/%3cscript/gi) || mypost.match(/javascript:/gi) || mypost.match(/on.*=/gi) ) return {cancel: true};
 
       }   
         

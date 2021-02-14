@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "CS741 Assignment1",
-  "description": "This extension detects and blocks XSS whole script injection. (Also blocks ads on learncbse.in website)",
+  "description": "This extension detects and blocks XSS whole script injection. (Also blocks simple image frame ads on websites)",
   "version": "1.0",
 
   "browser_action": {

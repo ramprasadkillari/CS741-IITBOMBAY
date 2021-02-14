@@ -1,0 +1,14 @@
+This extension detects and blocks XSS whole script injection. 
+Extra : This extension also blocks simple image frame ads on websites.
+
+Files Description:
+
+background.js contains the script for XSS detection and blocking
+background2.js detects requests made to adsites and block them.
+
+Team:
+
+170050068 - Killari Ramprasad
+170050081 - Doddi Sailendra Bathi Babu
+170050083 - Bonela Mahith
+170050100 - Ramya Narayanasamy
