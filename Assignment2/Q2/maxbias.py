@@ -9,11 +9,11 @@ mem = {}
 rowmem = {}
 cache = {}
 
-T 	 = 3
-N 	 = 9
-perm = [0,3,6,1,4,7,2,5,8]
-S 	 = 3
-Sbox = [0,2,4,6,3,1,7,5]
+# T 	 = 3
+# N 	 = 9
+# perm = [0,3,6,1,4,7,2,5,8]
+# S 	 = 3
+# Sbox = [0,2,4,6,3,1,7,5]
 
 # T = 3
 # N = 16
@@ -33,23 +33,30 @@ Sbox = [0,2,4,6,3,1,7,5]
 # 	3, 7, 11,15
 # )
 
-# T 	 = 3
-# N 	 = 9
-# perm = [0,3,6,1,4,7,2,5,8]
-# S 	 = 3
-# Sbox = [5,7,3,2,6,0,4,1]
-
-# T 	 = 1
-# N 	 = 4
-# perm = [0,1,2,3]
-# S 	 = 2
-# Sbox = [2,1,3,0]
+T 	 = 3
+N 	 = 9
+perm = [0,3,6,1,4,7,2,5,8]
+S 	 = 3
+Sbox = [5,7,3,2,6,0,4,1]
 
 # T 	 = 2
 # N 	 = 4
 # perm = [0,1,2,3]
 # S 	 = 2
 # Sbox = [2,1,3,0]	
+
+def getinputs():
+	global T
+	global N
+	global perm
+	global S
+	global Sbox
+	T 	 = int(input())
+	N 	 = int(input())
+	perm = list(map(int,input().split()))
+	S 	 = int(input())
+	Sbox = list(map(int,input().split()))
+
 
 def allxor(x):
 	ans = 0
@@ -159,11 +166,7 @@ def subgraph(path):
 	return ", ".join(res)
 
 if __name__ == "__main__":
-	T 	 = int(input())
-	N 	 = int(input())
-	perm = list(map(int,input().split()))
-	S 	 = int(input())
-	sbox = list(map(int,input().split()))
+	getinputs()
 
 	pows = 1<<S
 	ls_basic = ['0'*(S-len(bin(i)[2:]))+bin(i)[2:] for i in range(1,pows)]
