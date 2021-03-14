@@ -1,15 +1,43 @@
 from sys import exit
+import itertools
+
 
 maxbias = 0
 bestpath = []
-cnt = 0
+ls_basic = []
 mem = {}
+rowmem = {}
+cache = {}
 
 T 	 = 3
 N 	 = 9
 perm = [0,3,6,1,4,7,2,5,8]
 S 	 = 3
 Sbox = [0,2,4,6,3,1,7,5]
+
+# T = 3
+# N = 16
+# S = 4
+
+# Sbox = (
+#     0x0E, 0x04, 0x0D, 0x01, 
+# 	0x02, 0x0F, 0x0B, 0x08, 
+# 	0x03, 0x0A, 0x06, 0x0C, 
+# 	0x05, 0x09, 0x00, 0x07
+# )
+
+# perm = (
+#     0, 4, 8, 12, 
+# 	1, 5, 9, 13,
+# 	2, 6, 10,14,
+# 	3, 7, 11,15
+# )
+
+# T 	 = 3
+# N 	 = 9
+# perm = [0,3,6,1,4,7,2,5,8]
+# S 	 = 3
+# Sbox = [5,7,3,2,6,0,4,1]
 
 # T 	 = 1
 # N 	 = 4
@@ -33,13 +61,13 @@ def allxor(x):
 def bias(i,j):
 	if(i+j in mem):
 		return mem[i+j]
-	i = int(i,2)
-	j = int(j,2)
+	i1 = int(i,2)
+	j1 = int(j,2)
 	cntzeros = 0
 	comb = 1<<S
 	for it in range(comb):
 		x = Sbox[it]
-		if(allxor(it&i)^allxor(Sbox[it]&j) == 0):
+		if(allxor(it&i1)^allxor(Sbox[it]&j1) == 0):
 			cntzeros += 1
 	ans = cntzeros/comb - 0.5
 	mem[i+j] = ans
@@ -48,73 +76,60 @@ def bias(i,j):
 	return ans
 
 def rowbias(i,j):
-	# if(i==9 and j==11):
-	# 	print(i,j)
-	i = bin(i)[2:]
-	i = '0'*(N-len(i))+i
-	j = bin(j)[2:]
-	j = '0'*(N-len(j))+j
+
+	if(i+j in rowmem):
+		return rowmem[i+j]
 	ans = 0.5
 	for k in range(N//S):
 		tmp = i[k*S:(k+1)*S]
 		if(tmp=='0'*S):
 			continue
 		ans *= 2*bias(tmp,j[k*S:(k+1)*S])
+	rowmem[i+j] = ans
 	return ans
 
-def check(i,j):
-	i = bin(i)[2:]
-	i = '0'*(N-len(i))+i
-	j = bin(j)[2:]
-	j = '0'*(N-len(j))+j
-	for k in range(N//S):
-		if( (i[k*S:(k+1)*S]!='0'*S and j[k*S:(k+1)*S]=='0'*S) or (i[k*S:(k+1)*S]=='0'*S and j[k*S:(k+1)*S]!='0'*S) ):
-			return False
-	return True
-
-def permfunc(inp2):
-	out1 = bin(inp2)[2:]
-	out1 = '0'*(N-len(out1))+out1
+def permfunc(out1):
 	out2 = ['0' for _ in range(N)]
 	for ind in range(N):
 		if(out1[ind]=='1'):
 			out2[perm[ind]] = '1'
+	return "".join(out2)
 
-	return int("".join(out2),2)
-
-def func(inp,round,bias,path):
-	global cnt
-	path.append(inp)
-	global maxbias
-	global bestpath
-	if(abs(bias)<abs(maxbias)):
-		return
+def func(inp,round,localmaxbias):
+	if((inp,round) in cache):
+		return cache[(inp,round)]
 	
 	if(round>T):
-		# if(abs(bias)==0.5):
-		# 	print(subgraph(path))
-		# 	cnt += 1
-		if(abs(bias)>abs(maxbias)):
-			maxbias = bias
-			bestpath = path.copy()
+		return 0.5,[int(inp,2)]
 
-			# print("final : ",path)
-			# print(bestpath)
-			# path = []
-		return
-
+	# print(inp,round,cnt)
 	comb = 1<<N
-	for j in range(1,comb):
-		if(not(check(inp,j))):
-			continue
+	localmaxbias = 0
+	localpath = []
+
+	somelists = []
+	for k in range(N//S):
+		if(inp[k*S:(k+1)*S]!='0'*S):
+			somelists.append(ls_basic)
+		else:
+			somelists.append(['0'*S])
+
+	for item in itertools.product(*somelists):
+		j = "".join(item)
 
 		tmp = rowbias(inp,j)
-		if(tmp==0):
+		if(tmp==0 or abs(tmp)<abs(localmaxbias)):
 			continue
-		# print(round,":",inp,j,tmp)
+
 		out = permfunc(j)
-		func(out,round+1,2*bias*tmp,path)
-		path.pop()
+		ans,path = func(out,round+1,localmaxbias)
+		ans *= 2*tmp
+		if(abs(ans)>abs(localmaxbias)):
+			localmaxbias = ans
+			localpath = path.copy()
+
+	cache[(inp,round)] = (localmaxbias,[int(inp,2)]+localpath)
+	return localmaxbias,[int(inp,2)]+localpath
 
 def subgraph(path):
 	res = []
@@ -125,7 +140,7 @@ def subgraph(path):
 		if(p[i]=='1'):
 			res.append("P"+str(i))
 			res.append("K0"+str(i))
-			# res.append("K0"+str(i))
+
 	for i in range(1,T):
 		k = path[i]
 		k = bin(k)[2:]
@@ -144,26 +159,28 @@ def subgraph(path):
 	return ",".join(res)
 
 if __name__ == "__main__":
-	# T 	 = int(input())
-	# N 	 = int(input())
-	# perm = list(map(int,input().split()))
-	# S 	 = int(input())
-	# sbox = list(map(int,input().split()))
+	T 	 = int(input())
+	N 	 = int(input())
+	perm = list(map(int,input().split()))
+	S 	 = int(input())
+	sbox = list(map(int,input().split()))
 
+	pows = 1<<S
+	ls_basic = ['0'*(S-len(bin(i)[2:]))+bin(i)[2:] for i in range(1,pows)]
+	
 	comb = 1<<N
-
+	localmaxbias = 0
+	bestpath = []
 	for i in range(1,comb):
-		path = []
-		func(i,1,0.5,path)
-		# print(bestpath)
+		i2 = bin(i)[2:]
+		i2 = '0'*(N-len(i2))+i2
 
-		# if(len(bestpath)!=(T+1)):
-		# 	exit()
-		print(i)
-		# print(i,":",maxbias)
-		# print(subgraph(bestpath)) 
+		localbias,path = func(i2,1,localmaxbias)
+		
+		if(abs(localbias)>abs(localmaxbias)):
+			localmaxbias = localbias
+			bestpath = path.copy()
+		print(i,":",localbias)
 
-	# print(bestpath)
-	print("maxbias : ",maxbias)
+	print("maxbias : ",localmaxbias)
 	print(subgraph(bestpath))
-	# print("Total best paths : ",cnt)
