@@ -7,6 +7,8 @@ Sbox = [0,2,4,6,3,1,7,8]
 maxbias = 0
 bestpath = []
 
+mem = {}
+
 # T 	 = 1
 # N 	 = 4
 # perm = [0,1,2,3]
@@ -27,6 +29,8 @@ def allxor(x):
 	return ans
 
 def bias(i,j):
+	if(i+j in mem):
+		return mem[i+j]
 	i = int(i,2)
 	j = int(j,2)
 	cntzeros = 0
@@ -35,7 +39,9 @@ def bias(i,j):
 		x = Sbox[it]
 		if(allxor(it&i)^allxor(Sbox[it]&j) == 0):
 			cntzeros += 1
-	return cntzeros/comb - 0.5
+	ans = cntzeros/comb - 0.5
+	mem[i+j] = ans
+	return ans
 
 def rowbias(i,j):
 	i = bin(i)[2:]
