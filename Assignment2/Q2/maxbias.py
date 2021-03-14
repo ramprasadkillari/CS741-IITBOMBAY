@@ -1,13 +1,15 @@
 from sys import exit
+
+maxbias = 0
+bestpath = []
+cnt = 0
+mem = {}
+
 T 	 = 3
 N 	 = 9
 perm = [0,3,6,1,4,7,2,5,8]
 S 	 = 3
-Sbox = [0,2,4,6,3,1,7,8]
-maxbias = 0
-bestpath = []
-
-mem = {}
+Sbox = [0,2,4,6,3,1,7,5]
 
 # T 	 = 1
 # N 	 = 4
@@ -41,20 +43,24 @@ def bias(i,j):
 			cntzeros += 1
 	ans = cntzeros/comb - 0.5
 	mem[i+j] = ans
+	# if(ans==0.5):
+	# 	print(i,j,ans)
 	return ans
 
 def rowbias(i,j):
+	# if(i==9 and j==11):
+	# 	print(i,j)
 	i = bin(i)[2:]
 	i = '0'*(N-len(i))+i
 	j = bin(j)[2:]
 	j = '0'*(N-len(j))+j
-	ans = 1
+	ans = 0.5
 	for k in range(N//S):
 		tmp = i[k*S:(k+1)*S]
 		if(tmp=='0'*S):
 			continue
-		ans = 2*bias(tmp,j[k*S:(k+1)*S])
-	return ans/2
+		ans *= 2*bias(tmp,j[k*S:(k+1)*S])
+	return ans
 
 def check(i,j):
 	i = bin(i)[2:]
@@ -77,6 +83,7 @@ def permfunc(inp2):
 	return int("".join(out2),2)
 
 def func(inp,round,bias,path):
+	global cnt
 	path.append(inp)
 	global maxbias
 	global bestpath
@@ -84,9 +91,13 @@ def func(inp,round,bias,path):
 		return
 	
 	if(round>T):
+		# if(abs(bias)==0.5):
+		# 	print(subgraph(path))
+		# 	cnt += 1
 		if(abs(bias)>abs(maxbias)):
 			maxbias = bias
 			bestpath = path.copy()
+
 			# print("final : ",path)
 			# print(bestpath)
 			# path = []
@@ -148,10 +159,11 @@ if __name__ == "__main__":
 
 		# if(len(bestpath)!=(T+1)):
 		# 	exit()
-
-		print(i,":",maxbias)
-		# print(subgraph(bestpath))
+		print(i)
+		# print(i,":",maxbias)
+		# print(subgraph(bestpath)) 
 
 	# print(bestpath)
 	print("maxbias : ",maxbias)
 	print(subgraph(bestpath))
+	# print("Total best paths : ",cnt)
