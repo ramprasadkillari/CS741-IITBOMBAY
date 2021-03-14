@@ -156,7 +156,7 @@ def subgraph(path):
 		if(c[i]=='1'):
 			res.append("C"+str(i))
 
-	return ",".join(res)
+	return ", ".join(res)
 
 if __name__ == "__main__":
 	T 	 = int(input())
@@ -180,7 +180,7 @@ if __name__ == "__main__":
 		if(abs(localbias)>abs(localmaxbias)):
 			localmaxbias = localbias
 			bestpath = path.copy()
-		print(i,":",localbias)
+		# print(i,":",localbias)
 
-	print("maxbias : ",localmaxbias)
 	print(subgraph(bestpath))
+	print("Bias = ",localmaxbias)
