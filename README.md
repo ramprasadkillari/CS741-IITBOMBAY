@@ -18,3 +18,10 @@ co-located enclaves.
 In this attack the malware runs on the SGX hardware, abusing SGX protection features to conceal
 itself. A Prime+Probe cache side-channel attack is performed on a co-located SGX enclave running
 RSA implementation that uses a constant time multiplicative primitive.
+
+Team:
+
+170050068 - Killari Ramprasad
+170050081 - Doddi Sailendra Bathi Babu
+170050083 - Bonela Mahith
+170050100 - Ramya Narayanasamy
