@@ -1,0 +1,2 @@
+1.First run "python3 generateData.py <NUM_BITS> <NUM_TRACES>". NUM_BITS is the size of secret key in bits. NUM_TRACES is number of traces to generate.
+2.Then run "python3 keyRecovery.py <LOOKAHEAD>". LOOKAHEAD is the size of lookahead window used during key recovery. 
